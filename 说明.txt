@@ -1,0 +1,33 @@
+MyMinecraftClone/          # 项目根目录
+├─ assets/                 # 原始资源文件（非代码）
+│  ├─ models/              # 模型文件（如 .obj, .gltf）
+│  ├─ textures/            # 纹理图片（如 .png, .jpg）
+│  ├─ shaders/             # OpenGL着色器源代码（.vert, .frag, .glsl）
+│  └─ sounds/              # 音效文件
+├─ src/                    # 所有C++源代码
+│  ├─ core/                # 游戏核心层
+│  │  ├─ Application.cpp/h # 主应用类，负责窗口、循环、状态管理
+│  │  ├─ World.cpp/h       # 世界管理（区块加载/卸载、保存）
+│  │  └─ Chunk.cpp/h       # 区块实现（体素数据、网格生成）
+│  ├─ render/              # 渲染相关
+│  │  ├─ Renderer.cpp/h    # 主渲染器
+│  │  ├─ Shader.cpp/h      # 着色器编译与封装
+│  │  ├─ Texture.cpp/h     # 纹理加载与管理
+│  │  ├─ Mesh.cpp/h        # 网格数据封装（VAO, VBO, EBO）
+│  │  └─ Camera.cpp/h      # 摄像机控制（第一人称）
+│  ├─ world/               # 游戏玩法与逻辑
+│  │  ├─ Block.cpp/h       # 方块定义（ID, 属性, 纹理坐标）
+│  │  └─ Player.cpp/h      # 玩家逻辑（位置、状态）
+│  ├─ ui/                  # 用户界面
+│  │  └─ HUD.cpp/h         # 简单的游戏界面
+│  └─ main.cpp             # 程序入口点
+├─ lib/                    # 第三方库（手动放置或通过包管理器）
+│  ├─ glfw/                # GLFW（窗口和输入）
+│  ├─ glad/                # OpenGL加载器
+│  ├─ glm/                  # OpenGL Mathematics（数学库）
+│  ├─ stb_image/           # 图像加载库
+│  └─ ...                  # 其他依赖（如噪声库）
+├─ vs/                     # （可选）Visual Studio专属文件
+│  └─ MyMinecraftClone.sln # Visual Studio解决方案文件
+├─ CMakeLists.txt          # CMake构建脚本（强烈推荐！）
+└─ .gitignore              # Git忽略文件
