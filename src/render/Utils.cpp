@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <SOIL2/soil2.h>
+#include <SOIL2.h>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -95,9 +95,44 @@ int Utils::finalizeShaderProgram(GLuint sprogram)
 	return sprogram;
 }
 
+std::string Utils::readFile(const char* filePath) {
+	std::ifstream file(filePath);
+	std::stringstream buffer;
+
+	if (!file.is_open()) {
+		throw std::runtime_error("无法打开着色器文件: " + std::string(filePath));
+	}
+
+	buffer << file.rdbuf();
+	return buffer.str();
+}
+
 GLuint Utils::createShaderProgram(const char *vp, const char *fp) {
 	GLuint vShader = prepareShader(GL_VERTEX_SHADER, vp);
 	GLuint fShader = prepareShader(GL_FRAGMENT_SHADER, fp);
+	GLuint vfprogram = glCreateProgram();
+	glAttachShader(vfprogram, vShader);
+	glAttachShader(vfprogram, fShader);
+	finalizeShaderProgram(vfprogram);
+	return vfprogram;
+}
+
+GLuint Utils::createShaderProgram(const char* vp, const char* fp, bool isPath) {
+	std::string vertexCode, fragmentCode;
+
+	if (isPath) {
+		// 从文件读取
+		vertexCode = readFile(vp);
+		fragmentCode = readFile(fp);
+	}
+	else {
+		// 直接使用源码字符串
+		vertexCode = vp;
+		fragmentCode = fp;
+	}
+
+	GLuint vShader = prepareShader(GL_VERTEX_SHADER, vertexCode.c_str());
+	GLuint fShader = prepareShader(GL_FRAGMENT_SHADER, fragmentCode.c_str());
 	GLuint vfprogram = glCreateProgram();
 	glAttachShader(vfprogram, vShader);
 	glAttachShader(vfprogram, fShader);
