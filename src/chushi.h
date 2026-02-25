@@ -11,6 +11,13 @@
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <filesystem>
 #include "render/Utils.h"
+#include "render/Camera.h"
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = 400, lastY = 300;// 鼠标初始位置（窗口中心）
+bool firstMouse = true;// 鼠标第一次移动的标志
+float deltaTime = 0.0f;// 当前帧与上一帧的时间差
+float lastFrame = 0.0f;// 上一帧的时间
 
 class ResourceTester {
 public:
@@ -99,3 +106,53 @@ private:
         }
     }
 };
+
+void processInput(GLFWwindow* window)// 键盘输入处理函数
+{
+    // 获取帧时间
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+
+    // 处理键盘输入
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraMovement::FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraMovement::BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraMovement::LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraMovement::RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraMovement::UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.ProcessKeyboard(CameraMovement::DOWN, deltaTime);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)// 鼠标移动回调函数
+{
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xOffset = xpos - lastX;
+    float yOffset = lastY - ypos;  // 反向Y轴
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xOffset, yOffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset)// 鼠标滚轮回调函数
+{
+    camera.ProcessMouseScroll(yOffset);
+}
+
+// 键盘回调函数
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+}

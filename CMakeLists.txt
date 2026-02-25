@@ -39,7 +39,7 @@ file(GLOB SOIL2_SOURCES
 # 合并源文件列表
 list(APPEND SRC_LIST ${SOIL2_SOURCES})
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} "src/chushi.h" )
+add_executable(${PROJECT_NAME} ${SRC_LIST} "src/chushi.h"  "src/render/Camera.cpp" "src/render/Camera.h" "src/world/Block.cpp" "src/world/Block.h")
 
 # ===== 链接其他库 =====
 target_link_libraries(${PROJECT_NAME}
@@ -196,7 +196,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     ASSETS_DIR="${ASSETS_OUTPUT_DIR}/"
     SHADER_DIR="${ASSETS_OUTPUT_DIR}/shaders/"
     TEXTURE_DIR="${ASSETS_OUTPUT_DIR}/textures/"
-)
+) 
 
 # 最终调试信息
 message(STATUS "========================================")

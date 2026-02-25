@@ -52,7 +52,9 @@ void init(GLFWwindow* window) {
 }
 
 void display(GLFWwindow* window, double currentTime) {
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	processInput(window);// 键盘输入处理
 
 	glUseProgram(renderingProgram);
 
@@ -61,9 +63,9 @@ void display(GLFWwindow* window, double currentTime) {
 
 	glfwGetFramebufferSize(window, &width, &height);
 	aspect = (float)width / (float)height;
-	pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
+	pMat = camera.GetProjectionMatrix(800.0f / 600.0f);
 
-	vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
+	vMat = camera.GetViewMatrix();
 	mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ));
 	mvMat = vMat * mMat;
 
@@ -90,6 +92,14 @@ int main(void) {
 	glfwSwapInterval(1);
 
 	init(window);
+
+	// 必须设置：将鼠标设置为禁用模式（隐藏并捕获）
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// 设置回调函数
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, key_callback);
 
 	while (!glfwWindowShouldClose(window)) {
 		display(window, glfwGetTime());
