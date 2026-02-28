@@ -10,6 +10,8 @@
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <filesystem>
+#include <stb_image.h>
+#include "world/Block.h"
 #include "render/Utils.h"
 #include "render/Camera.h"
 
@@ -18,6 +20,10 @@ float lastX = 400, lastY = 300;// 鼠标初始位置（窗口中心）
 bool firstMouse = true;// 鼠标第一次移动的标志
 float deltaTime = 0.0f;// 当前帧与上一帧的时间差
 float lastFrame = 0.0f;// 上一帧的时间
+
+GLuint textureID;// 纹理ID
+int Texwidth, Texheight, nrChannels;
+unsigned char* Texdata;
 
 class ResourceTester {
 public:
