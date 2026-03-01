@@ -24,6 +24,7 @@ float lastFrame = 0.0f;// 上一帧的时间
 GLuint textureID;// 纹理ID
 int Texwidth, Texheight, nrChannels;
 unsigned char* Texdata;
+GLuint texturezuobiao;// 纹理坐标纹理
 
 class ResourceTester {
 public:

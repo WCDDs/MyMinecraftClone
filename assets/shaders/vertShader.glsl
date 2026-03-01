@@ -5,10 +5,12 @@ layout (location = 1) in vec2 aTexCoord;
 
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
+uniform vec2 texturezuobiao;
 out vec2 TexCoord;
 
 void main(void)
 {
 	gl_Position = proj_matrix * mv_matrix * vec4(position,1.0);
-	TexCoord = aTexCoord;
+	TexCoord.x=aTexCoord.x+texturezuobiao.x;
+	TexCoord.y=aTexCoord.y+texturezuobiao.y;
 } 

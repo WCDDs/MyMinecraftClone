@@ -12,10 +12,12 @@ struct Vertex {
     glm::vec2 TexCoords;
 };
 
-const int chang = 16;
-const int kuan = 16;
+const float chang = 1024.0f;
+const float kuan = 1024.0f;
+const float fangkuaichang = 32.0f;
+const float fangkuaikuan = 32.0f;
 
 // 正方体顶点数据（带纹理坐标）
 extern std::vector<Vertex> cubeVertices;
 
-void Select_Material(int a1);
+void Select_Material();

@@ -19,7 +19,8 @@ float aspect; GLuint aspectLoc;
 glm::mat4 pMat, vMat, mMat, mvMat;
 
 void setupVertices(void) {
-	Select_Material(17);
+
+	Select_Material();
 
 	glGenVertexArrays(1, vao);
 	glBindVertexArray(vao[0]);
@@ -35,17 +36,17 @@ void setupVertices(void) {
 	glBindTexture(GL_TEXTURE_2D, textureID); // 绑定纹理对象
 
 	// 设置纹理环绕方式：在S和T轴上设置为重复
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	// 设置纹理过滤方式：缩小和放大时都使用线性过滤
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);//使像素更加清晰
 
-	Texdata = stbi_load("assets/textures/R-C.jpg", &width, &height, &nrChannels, 0);
+	Texdata = stbi_load("assets/textures/texture.png", &width, &height, &nrChannels, 4);//4通道（RGBA）用于加载.png纹理
 
 	if (Texdata) {
 		// 上传纹理数据到GPU
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, Texdata);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -61,6 +62,9 @@ void init(GLFWwindow* window) {
 	cout << 2;
 	cameraX = 0.0f; cameraY = 0.0f; cameraZ = 8.0f;
 	cubeLocX = 0.0f; cubeLocY = -2.0f; cubeLocZ = 0.0f;
+	mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
+	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
+	texturezuobiao = glGetUniformLocation(renderingProgram, "texturezuobiao");
 	setupVertices();
 }
 
@@ -72,9 +76,6 @@ void display(GLFWwindow* window, double currentTime) {
 
 	glUseProgram(renderingProgram);
 
-	mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
-	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
-
 	glfwGetFramebufferSize(window, &width, &height);
 	aspect = (float)width / (float)height;
 	pMat = camera.GetProjectionMatrix(aspect);
@@ -82,9 +83,10 @@ void display(GLFWwindow* window, double currentTime) {
 	vMat = camera.GetViewMatrix();
 	mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ));
 	mvMat = vMat * mMat;
-
+	
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+	glUniform2f(texturezuobiao, 224.0f / chang, 0.0f / kuan);
 
 	glActiveTexture(GL_TEXTURE0);// 激活纹理单元0
 	glBindTexture(GL_TEXTURE_2D, textureID);// 绑定纹理对象到当前激活的纹理单元

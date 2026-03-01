@@ -1,0 +1,285 @@
+﻿好的，这是所有精灵的中英文名称对照和坐标信息：
+
+## 📊 精灵表坐标信息
+
+| 中文名称 | 英文文件名 | 坐标 (x, y) | 尺寸 (w, h) |
+|---------|-----------|------------|------------|
+| **流体动画** |
+| 熔岩流 | lava_flow.png | (0, 0) | 64x1024 |
+| 火焰层0 | fire_layer_0.png | (64, 0) | 32x1024 |
+| 火焰层1 | fire_layer_1.png | (96, 0) | 32x1024 |
+| 传送门 | portal.png | (128, 0) | 32x1024 |
+| 静态水 | water_still.png | (160, 0) | 32x1024 |
+| 静态熔岩 | lava_still.png | (192, 0) | 32x640 |
+| **铁砧** |
+| 铁砧底座 | anvil_base.png | (192, 640) | 32x32 |
+| 铁砧顶部(0损坏) | anvil_top_damaged_0.png | (192, 672) | 32x32 |
+| 铁砧顶部(1损坏) | anvil_top_damaged_1.png | (192, 704) | 32x32 |
+| 铁砧顶部(2损坏) | anvil_top_damaged_2.png | (192, 736) | 32x32 |
+| **功能方块** |
+| 信标 | beacon.png | (192, 768) | 32x32 |
+| 基岩 | bedrock.png | (192, 992) | 32x32 |
+| 书架 | bookshelf.png | (224, 0) | 32x32 |
+| 酿造台 | brewing_stand.png | (256, 0) | 32x32 |
+| 酿造台底座 | brewing_stand_base.png | (288, 0) | 32x32 |
+| 命令方块 | command_block.png | (288, 32) | 32x32 |
+| 比较器(关) | comparator_off.png | (320, 32) | 32x32 |
+| 比较器(开) | comparator_on.png | (352, 32) | 32x32 |
+| 工作台(正面) | crafting_table_front.png | (384, 32) | 32x32 |
+| 工作台(侧面) | crafting_table_side.png | (416, 32) | 32x32 |
+| 工作台(顶部) | crafting_table_top.png | (448, 32) | 32x32 |
+| 日光探测器(侧面) | daylight_detector_side.png | (480, 32) | 32x32 |
+| 日光探测器(顶部) | daylight_detector_top.png | (512, 32) | 32x32 |
+| **矿石/资源** |
+| 砖块 | brick.png | (320, 0) | 32x32 |
+| 粘土 | clay.png | (832, 0) | 32x32 |
+| 煤矿块 | coal_block.png | (864, 0) | 32x32 |
+| 煤矿石 | coal_ore.png | (896, 0) | 32x32 |
+| 圆石 | cobblestone.png | (928, 0) | 32x32 |
+| 苔石 | cobblestone_mossy.png | (960, 0) | 32x32 |
+| 钻石块 | diamond_block.png | (896, 32) | 32x32 |
+| 钻石矿石 | diamond_ore.png | (928, 32) | 32x32 |
+| 泥土 | dirt.png | (960, 32) | 32x32 |
+| 绿宝石块 | emerald_block.png | (480, 64) | 32x32 |
+| 绿宝石矿石 | emerald_ore.png | (512, 64) | 32x32 |
+| 金块 | gold_block.png | (384, 96) | 32x32 |
+| 金矿石 | gold_ore.png | (416, 96) | 32x32 |
+| 铁块 | iron_block.png | (576, 128) | 32x32 |
+| 铁矿石 | iron_ore.png | (608, 128) | 32x32 |
+| 青金石块 | lapis_block.png | (768, 128) | 32x32 |
+| 青金石矿石 | lapis_ore.png | (800, 128) | 32x32 |
+| **植物/作物** |
+| 仙人掌(底) | cactus_bottom.png | (352, 0) | 32x32 |
+| 仙人掌(侧) | cactus_side.png | (384, 0) | 32x32 |
+| 仙人掌(顶) | cactus_top.png | (416, 0) | 32x32 |
+| 胡萝卜(阶段0) | carrots_stage_0.png | (576, 0) | 32x32 |
+| 胡萝卜(阶段1) | carrots_stage_1.png | (608, 0) | 32x32 |
+| 胡萝卜(阶段2) | carrots_stage_2.png | (640, 0) | 32x32 |
+| 胡萝卜(阶段3) | carrots_stage_3.png | (672, 0) | 32x32 |
+| 可可豆(阶段0) | cocoa_stage_0.png | (992, 0) | 32x32 |
+| 可可豆(阶段1) | cocoa_stage_1.png | (224, 32) | 32x32 |
+| 可可豆(阶段2) | cocoa_stage_2.png | (256, 32) | 32x32 |
+| 枯死灌木 | deadbush.png | (544, 32) | 32x32 |
+| 蕨 | fern.png | (832, 64) | 32x32 |
+| 蒲公英 | flower_dandelion.png | (864, 64) | 32x32 |
+| 玫瑰 | flower_rose.png | (928, 64) | 32x32 |
+| 高草 | tallgrass.png | (576, 224) | 32x32 |
+| **树木/木材** |
+| 白桦树叶 | leaves_birch.png | (832, 128) | 32x32 |
+| 白桦树叶(不透明) | leaves_birch_opaque.png | (864, 128) | 32x32 |
+| 丛林树叶 | leaves_jungle.png | (896, 128) | 32x32 |
+| 丛林树叶(不透明) | leaves_jungle_opaque.png | (928, 128) | 32x32 |
+| 橡树叶 | leaves_oak.png | (832, 128) | 32x32 |
+| 橡树叶(不透明) | leaves_oak_opaque.png | (864, 128) | 32x32 |
+| 云杉树叶 | leaves_spruce.png | (960, 128) | 32x32 |
+| 云杉树叶(不透明) | leaves_spruce_opaque.png | (992, 128) | 32x32 |
+| 白桦原木 | log_birch.png | (256, 160) | 32x32 |
+| 丛林原木 | log_jungle.png | (320, 160) | 32x32 |
+| 橡木原木 | log_oak.png | (352, 160) | 32x32 |
+| 云杉原木 | log_spruce.png | (384, 160) | 32x32 |
+| 白桦木板 | planks_birch.png | (352, 192) | 32x32 |
+| 丛林木板 | planks_jungle.png | (384, 192) | 32x32 |
+| 橡木木板 | planks_oak.png | (416, 192) | 32x32 |
+| 云杉木板 | planks_spruce.png | (448, 192) | 32x32 |
+| 白桦树苗 | sapling_birch.png | (224, 896) | 32x32 |
+| 丛林树苗 | sapling_jungle.png | (224, 928) | 32x32 |
+| 橡树苗 | sapling_oak.png | (224, 960) | 32x32 |
+| 云杉树苗 | sapling_spruce.png | (224, 992) | 32x32 |
+| **食物/作物** |
+| 蛋糕(底) | cake_bottom.png | (448, 0) | 32x32 |
+| 蛋糕(内) | cake_inner.png | (480, 0) | 32x32 |
+| 蛋糕(侧) | cake_side.png | (512, 0) | 32x32 |
+| 蛋糕(顶) | cake_top.png | (544, 0) | 32x32 |
+| 马铃薯(阶段0) | potatoes_stage_0.png | (576, 0) | 32x32 |
+| 马铃薯(阶段1) | potatoes_stage_1.png | (608, 0) | 32x32 |
+| 马铃薯(阶段2) | potatoes_stage_2.png | (640, 0) | 32x32 |
+| 马铃薯(阶段3) | potatoes_stage_3.png | (480, 192) | 32x32 |
+| 小麦(阶段0) | wheat_stage_0.png | (928, 224) | 32x32 |
+| 小麦(阶段1) | wheat_stage_1.png | (960, 224) | 32x32 |
+| 小麦(阶段2) | wheat_stage_2.png | (992, 224) | 32x32 |
+| 小麦(阶段3) | wheat_stage_3.png | (256, 256) | 32x32 |
+| 小麦(阶段4) | wheat_stage_4.png | (256, 288) | 32x32 |
+| 小麦(阶段5) | wheat_stage_5.png | (256, 320) | 32x32 |
+| 小麦(阶段6) | wheat_stage_6.png | (256, 352) | 32x32 |
+| 小麦(阶段7) | wheat_stage_7.png | (256, 384) | 32x32 |
+| **红石元件** |
+| 发射器(水平) | dispenser_front_horizontal.png | (992, 32) | 32x32 |
+| 发射器(垂直) | dispenser_front_vertical.png | (224, 64) | 32x32 |
+| 投掷器(水平) | dropper_front_horizontal.png | (416, 64) | 32x32 |
+| 投掷器(垂直) | dropper_front_vertical.png | (448, 64) | 32x32 |
+| 漏斗(内) | hopper_inside.png | (416, 128) | 32x32 |
+| 漏斗(外) | hopper_outside.png | (448, 128) | 32x32 |
+| 漏斗(顶) | hopper_top.png | (480, 128) | 32x32 |
+| 拉杆 | lever.png | (224, 160) | 32x32 |
+| 活塞(内) | piston_inner.png | (224, 192) | 32x32 |
+| 活塞(侧) | piston_side.png | (256, 192) | 32x32 |
+| 活塞(普通顶) | piston_top_normal.png | (288, 192) | 32x32 |
+| 活塞(粘性顶) | piston_top_sticky.png | (320, 192) | 32x32 |
+| 红石块 | redstone_block.png | (224, 320) | 32x32 |
+| 红石线(十字) | redstone_dust_cross.png | (224, 352) | 32x32 |
+| 红石线(线) | redstone_dust_line.png | (224, 416) | 32x32 |
+| 红石灯(关) | redstone_lamp_off.png | (224, 448) | 32x32 |
+| 红石灯(开) | redstone_lamp_on.png | (224, 480) | 32x32 |
+| 红石矿石 | redstone_ore.png | (224, 512) | 32x32 |
+| 红石火把(关) | redstone_torch_off.png | (224, 544) | 32x32 |
+| 红石火把(开) | redstone_torch_on.png | (224, 576) | 32x32 |
+| 中继器(关) | repeater_off.png | (224, 640) | 32x32 |
+| 中继器(开) | repeater_on.png | (224, 672) | 32x32 |
+| **铁轨** |
+| 激活铁轨 | rail_activator.png | (864, 192) | 32x32 |
+| 激活铁轨(充能) | rail_activator_powered.png | (896, 192) | 32x32 |
+| 探测铁轨 | rail_detector.png | (928, 192) | 32x32 |
+| 探测铁轨(充能) | rail_detector_powered.png | (960, 192) | 32x32 |
+| 充能铁轨 | rail_golden.png | (992, 192) | 32x32 |
+| 充能铁轨(充能) | rail_golden_powered.png | (224, 224) | 32x32 |
+| 普通铁轨 | rail_normal.png | (224, 256) | 32x32 |
+| 普通铁轨(转弯) | rail_normal_turned.png | (224, 288) | 32x32 |
+| **床** |
+| 床脚(端) | bed_feet_end.png | (192, 800) | 32x32 |
+| 床脚(侧) | bed_feet_side.png | (192, 832) | 32x32 |
+| 床脚(顶) | bed_feet_top.png | (192, 864) | 32x32 |
+| 床头(端) | bed_head_end.png | (192, 896) | 32x32 |
+| 床头(侧) | bed_head_side.png | (192, 928) | 32x32 |
+| 床头(顶) | bed_head_top.png | (192, 960) | 32x32 |
+| **容器/设备** |
+| 炼药锅(底) | cauldron_bottom.png | (704, 0) | 32x32 |
+| 炼药锅(内) | cauldron_inner.png | (736, 0) | 32x32 |
+| 炼药锅(侧) | cauldron_side.png | (768, 0) | 32x32 |
+| 炼药锅(顶) | cauldron_top.png | (800, 0) | 32x32 |
+| 附魔台(底) | enchanting_table_bottom.png | (544, 64) | 32x32 |
+| 附魔台(侧) | enchanting_table_side.png | (576, 64) | 32x32 |
+| 附魔台(顶) | enchanting_table_top.png | (608, 64) | 32x32 |
+| 末地传送门(眼) | endframe_eye.png | (672, 64) | 32x32 |
+| 末地传送门(侧) | endframe_side.png | (704, 64) | 32x32 |
+| 末地传送门(顶) | endframe_top.png | (736, 64) | 32x32 |
+| 熔炉(正面关) | furnace_front_off.png | (960, 64) | 32x32 |
+| 熔炉(正面开) | furnace_front_on.png | (992, 64) | 32x32 |
+| 熔炉(侧) | furnace_side.png | (224, 96) | 32x32 |
+| 熔炉(顶) | furnace_top.png | (256, 96) | 32x32 |
+| 音符盒 | noteblock.png | (672, 128) | 32x32 |
+| 唱片机(侧) | jukebox_side.png | (672, 128) | 32x32 |
+| 唱片机(顶) | jukebox_top.png | (704, 128) | 32x32 |
+| **环境/自然** |
+| 耕地(干) | farmland_dry.png | (768, 64) | 32x32 |
+| 耕地(湿) | farmland_wet.png | (800, 64) | 32x32 |
+| 草(侧) | grass_side.png | (448, 96) | 32x32 |
+| 草(侧覆盖) | grass_side_overlay.png | (480, 96) | 32x32 |
+| 草(侧雪) | grass_side_snowed.png | (512, 96) | 32x32 |
+| 草(顶) | grass_top.png | (544, 96) | 32x32 |
+| 砂砾 | gravel.png | (576, 96) | 32x32 |
+| 冰 | ice.png | (512, 128) | 32x32 |
+| 菌丝(侧) | mycelium_side.png | (768, 160) | 32x32 |
+| 菌丝(顶) | mycelium_top.png | (800, 160) | 32x32 |
+| 沙 | sand.png | (224, 704) | 32x32 |
+| 雪 | snow.png | (256, 224) | 32x32 |
+| 灵魂沙 | soul_sand.png | (288, 224) | 32x32 |
+| 海绵 | sponge.png | (320, 224) | 32x32 |
+| **石头/建筑** |
+| 末地石 | end_stone.png | (640, 64) | 32x32 |
+| 硬化粘土 | hardened_clay.png | (608, 96) | 32x32 |
+| 地狱砖 | nether_brick.png | (832, 160) | 32x32 |
+| 地狱岩 | netherrack.png | (960, 160) | 32x32 |
+| 黑曜石 | obsidian.png | (992, 160) | 32x32 |
+| 石头 | stone.png | (352, 224) | 32x32 |
+| 石砖 | stonebrick.png | (448, 224) | 32x32 |
+| 雕刻石砖 | stonebrick_carved.png | (480, 224) | 32x32 |
+| 裂石砖 | stonebrick_cracked.png | (512, 224) | 32x32 |
+| 苔石砖 | stonebrick_mossy.png | (544, 224) | 32x32 |
+| **玻璃** |
+| 玻璃 | glass.png | (288, 96) | 32x32 |
+| 玻璃板(顶) | glass_pane_top.png | (320, 96) | 32x32 |
+| **下界/末地** |
+| 下界疣(阶段0) | nether_wart_stage_0.png | (864, 160) | 32x32 |
+| 下界疣(阶段1) | nether_wart_stage_1.png | (896, 160) | 32x32 |
+| 下界疣(阶段2) | nether_wart_stage_2.png | (928, 160) | 32x32 |
+| **工具/杂项** |
+| 破坏阶段0 | destroy_stage_0.png | (576, 32) | 32x32 |
+| 破坏阶段1 | destroy_stage_1.png | (608, 32) | 32x32 |
+| 破坏阶段2 | destroy_stage_2.png | (640, 32) | 32x32 |
+| 破坏阶段3 | destroy_stage_3.png | (672, 32) | 32x32 |
+| 破坏阶段4 | destroy_stage_4.png | (704, 32) | 32x32 |
+| 破坏阶段5 | destroy_stage_5.png | (736, 32) | 32x32 |
+| 破坏阶段6 | destroy_stage_6.png | (768, 32) | 32x32 |
+| 破坏阶段7 | destroy_stage_7.png | (800, 32) | 32x32 |
+| 破坏阶段8 | destroy_stage_8.png | (832, 32) | 32x32 |
+| 破坏阶段9 | destroy_stage_9.png | (864, 32) | 32x32 |
+| 龙蛋 | dragon_egg.png | (384, 64) | 32x32 |
+| 花盆 | flower_pot.png | (896, 64) | 32x32 |
+| 铁栏杆 | iron_bars.png | (544, 128) | 32x32 |
+| 物品框背景 | itemframe_background.png | (640, 128) | 32x32 |
+| 梯子 | ladder.png | (736, 128) | 32x32 |
+| 刷怪笼 | mob_spawner.png | (544, 160) | 32x32 |
+| 甘蔗 | reeds.png | (224, 608) | 32x32 |
+| 火把 | torch_on.png | (704, 224) | 32x32 |
+| 活板门 | trapdoor.png | (736, 224) | 32x32 |
+| 绊线 | trip_wire.png | (768, 224) | 32x32 |
+| 绊线钩 | trip_wire_source.png | (800, 224) | 32x32 |
+| 藤蔓 | vine.png | (832, 224) | 32x32 |
+| 睡莲 | waterlily.png | (864, 224) | 32x32 |
+| 蜘蛛网 | web.png | (896, 224) | 32x32 |
+| **蘑菇** |
+| 蘑菇(内部) | mushroom_block_inside.png | (576, 160) | 32x32 |
+| 蘑菇(棕色皮) | mushroom_block_skin_brown.png | (608, 160) | 32x32 |
+| 蘑菇(红色皮) | mushroom_block_skin_red.png | (640, 160) | 32x32 |
+| 蘑菇(茎皮) | mushroom_block_skin_stem.png | (672, 160) | 32x32 |
+| 棕色蘑菇 | mushroom_brown.png | (704, 160) | 32x32 |
+| 红色蘑菇 | mushroom_red.png | (736, 160) | 32x32 |
+| **石英** |
+| 石英块(底) | quartz_block_bottom.png | (640, 192) | 32x32 |
+| 雕刻石英块 | quartz_block_chiseled.png | (672, 192) | 32x32 |
+| 石英柱 | quartz_block_lines.png | (736, 192) | 32x32 |
+| 石英块(侧) | quartz_block_side.png | (800, 192) | 32x32 |
+| 石英矿石 | quartz_ore.png | (832, 192) | 32x32 |
+| **南瓜/西瓜** |
+| 南瓜(脸关) | pumpkin_face_off.png | (512, 192) | 32x32 |
+| 南瓜(脸开) | pumpkin_face_on.png | (544, 192) | 32x32 |
+| 南瓜(侧) | pumpkin_side.png | (576, 192) | 32x32 |
+| 南瓜(顶) | pumpkin_top.png | (608, 192) | 32x32 |
+| 西瓜(侧) | melon_side.png | (416, 160) | 32x32 |
+| 西瓜(顶) | melon_top.png | (512, 160) | 32x32 |
+| **砂岩** |
+| 砂岩(底) | sandstone_bottom.png | (224, 736) | 32x32 |
+| 雕刻砂岩 | sandstone_carved.png | (224, 768) | 32x32 |
+| 砂岩(普通) | sandstone_normal.png | (224, 800) | 32x32 |
+| 平滑砂岩 | sandstone_smooth.png | (224, 832) | 32x32 |
+| 砂岩(顶) | sandstone_top.png | (224, 864) | 32x32 |
+| **染色粘土** |
+| 黑色粘土 | hardened_clay_stained_black.png | (640, 96) | 32x32 |
+| 蓝色粘土 | hardened_clay_stained_blue.png | (672, 96) | 32x32 |
+| 棕色粘土 | hardened_clay_stained_brown.png | (704, 96) | 32x32 |
+| 青色粘土 | hardened_clay_stained_cyan.png | (736, 96) | 32x32 |
+| 灰色粘土 | hardened_clay_stained_gray.png | (768, 96) | 32x32 |
+| 绿色粘土 | hardened_clay_stained_green.png | (800, 96) | 32x32 |
+| 淡蓝色粘土 | hardened_clay_stained_light_blue.png | (832, 96) | 32x32 |
+| 黄绿色粘土 | hardened_clay_stained_lime.png | (864, 96) | 32x32 |
+| 品红色粘土 | hardened_clay_stained_magenta.png | (896, 96) | 32x32 |
+| 橙色粘土 | hardened_clay_stained_orange.png | (928, 96) | 32x32 |
+| 粉色粘土 | hardened_clay_stained_pink.png | (960, 96) | 32x32 |
+| 紫色粘土 | hardened_clay_stained_purple.png | (992, 96) | 32x32 |
+| 红色粘土 | hardened_clay_stained_red.png | (224, 128) | 32x32 |
+| 淡灰色粘土 | hardened_clay_stained_silver.png | (256, 128) | 32x32 |
+| 白色粘土 | hardened_clay_stained_white.png | (288, 128) | 32x32 |
+| 黄色粘土 | hardened_clay_stained_yellow.png | (320, 128) | 32x32 |
+| **染色羊毛** |
+| 黑色羊毛 | wool_colored_black.png | (256, 416) | 32x32 |
+| 蓝色羊毛 | wool_colored_blue.png | (256, 448) | 32x32 |
+| 棕色羊毛 | wool_colored_brown.png | (256, 480) | 32x32 |
+| 青色羊毛 | wool_colored_cyan.png | (256, 512) | 32x32 |
+| 灰色羊毛 | wool_colored_gray.png | (256, 544) | 32x32 |
+| 绿色羊毛 | wool_colored_green.png | (256, 576) | 32x32 |
+| 淡蓝色羊毛 | wool_colored_light_blue.png | (256, 608) | 32x32 |
+| 黄绿色羊毛 | wool_colored_lime.png | (256, 640) | 32x32 |
+| 品红色羊毛 | wool_colored_magenta.png | (256, 672) | 32x32 |
+| 橙色羊毛 | wool_colored_orange.png | (256, 704) | 32x32 |
+| 粉色羊毛 | wool_colored_pink.png | (256, 736) | 32x32 |
+| 紫色羊毛 | wool_colored_purple.png | (256, 768) | 32x32 |
+| 红色羊毛 | wool_colored_red.png | (256, 800) | 32x32 |
+| 淡灰色羊毛 | wool_colored_silver.png | (256, 832) | 32x32 |
+| 白色羊毛 | wool_colored_white.png | (256, 864) | 32x32 |
+| 黄色羊毛 | wool_colored_yellow.png | (256, 896) | 32x32 |
+| **TNT** |
+| TNT(底) | tnt_bottom.png | (608, 224) | 32x32 |
+| TNT(侧) | tnt_side.png | (640, 224) | 32x32 |
+| TNT(顶) | tnt_top.png | (672, 224) | 32x32 |
+
+这样你就可以方便地查阅每个精灵的位置了！
