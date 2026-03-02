@@ -383,3 +383,22 @@ glm::vec2 getTextureCoords(int index)
     }
 	return textureCoords[index];
 }
+std::vector<InstanceData> instances;
+void generateInstances(int numInstances)
+{
+    glm::mat4 model = glm::mat4(1.0f);
+    for (int i = 0; i < numInstances; i++)
+    {
+        // 生成随机位置
+        float x = static_cast<float>(rand() % 10 - 5); // -50到50之间
+        float y = static_cast<float>(rand() % 10 - 5);
+        float z = static_cast<float>(rand() % 10 - 5);
+        // 创建实例数据
+        InstanceData instance;
+        instance.modelMatrix = glm::translate(model, glm::vec3(x, y, z));
+        instance.textureOffset.x = textureCoords[216].x/chang; // 随机选择一个纹理索引
+		instance.textureOffset.y = textureCoords[216].y/kuan;
+        // 添加到实例列表
+        instances.push_back(instance);
+	}
+}

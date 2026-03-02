@@ -26,6 +26,8 @@ int Texwidth, Texheight, nrChannels;
 unsigned char* Texdata;
 GLuint texturezuobiao;// 纹理坐标纹理
 
+const int instanceCount = 50;
+
 class ResourceTester {
 public:
     static void testAllResources() {

@@ -23,6 +23,7 @@ glm::vec2 wenlizuobiao_xy;
 void setupVertices(void) {
 
 	Select_Material();
+	generateInstances(instanceCount);// 生成实例数据的函数 
 
 	glGenVertexArrays(1, vao);
 	glBindVertexArray(vao[0]);
@@ -31,8 +32,11 @@ void setupVertices(void) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
 	glBufferData(GL_ARRAY_BUFFER, cubeVertices.size() * sizeof(Vertex), cubeVertices.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, cubeVertices.size() * sizeof(Vertex), cubeVertices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+	glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(InstanceData), instances.data(), GL_STATIC_DRAW);
+
 
 	glGenTextures(1, &textureID); // 创建一个纹理ID
 	glBindTexture(GL_TEXTURE_2D, textureID); // 绑定纹理对象
@@ -56,6 +60,7 @@ void setupVertices(void) {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(Texdata);
+
 }
 
 void init(GLFWwindow* window) {
@@ -103,15 +108,40 @@ void display(GLFWwindow* window, double currentTime) {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	glEnableVertexAttribArray(0);
 
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3)));
+	
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3)));
 	glEnableVertexAttribArray(1);
+
+	
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3)));
+	glEnableVertexAttribArray(2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+
+
+
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)0);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(sizeof(glm::vec4)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(2 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(3 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(4 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(7);
+	// 关键：设置属性为实例化模式
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+	glVertexAttribDivisor(7, 1);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, 36, instanceCount);
 }
 
 int main(void) {

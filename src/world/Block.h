@@ -7,9 +7,9 @@
 #include <cmath>
 
 struct Vertex {
-    glm::vec3 Position;
-    glm::vec3 Normal;
-    glm::vec2 TexCoords;
+	glm::vec3 Position;// 顶点位置
+	glm::vec3 Normal;// 顶点法线
+	glm::vec2 TexCoords;// 顶点纹理坐标
 };
 
 const float chang = 1024.0f;
@@ -24,3 +24,12 @@ extern std::vector<glm::vec2> textureCoords;
 void Select_Material();
 
 glm::vec2 getTextureCoords(int index);// 根据索引获取对应的纹理坐标
+
+struct InstanceData {
+	glm::mat4 modelMatrix;
+	glm::vec2 textureOffset; // 纹理坐标偏移
+};
+
+extern std::vector<InstanceData> instances;
+
+void generateInstances(int numInstances); // 生成实例数据
