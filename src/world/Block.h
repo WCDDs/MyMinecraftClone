@@ -19,5 +19,8 @@ const float fangkuaikuan = 32.0f;
 
 // 正方体顶点数据（带纹理坐标）
 extern std::vector<Vertex> cubeVertices;
+extern std::vector<glm::vec2> textureCoords;
 
 void Select_Material();
+
+glm::vec2 getTextureCoords(int index);// 根据索引获取对应的纹理坐标

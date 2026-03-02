@@ -18,6 +18,8 @@ int width, height;
 float aspect; GLuint aspectLoc;
 glm::mat4 pMat, vMat, mMat, mvMat;
 
+glm::vec2 wenlizuobiao_xy;
+
 void setupVertices(void) {
 
 	Select_Material();
@@ -86,7 +88,9 @@ void display(GLFWwindow* window, double currentTime) {
 	
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
-	glUniform2f(texturezuobiao, 224.0f / chang, 0.0f / kuan);
+
+	wenlizuobiao_xy = getTextureCoords(216);
+	glUniform2f(texturezuobiao, wenlizuobiao_xy.x / chang, wenlizuobiao_xy.y / kuan);
 
 	glActiveTexture(GL_TEXTURE0);// 激活纹理单元0
 	glBindTexture(GL_TEXTURE_2D, textureID);// 绑定纹理对象到当前激活的纹理单元
