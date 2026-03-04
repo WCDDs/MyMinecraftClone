@@ -384,21 +384,27 @@ glm::vec2 getTextureCoords(int index)
 	return textureCoords[index];
 }
 std::vector<InstanceData> instances;
-void generateInstances(int numInstances)
+qukuai sc;
+int shilihuashulian;
+void generateInstances()
 {
     glm::mat4 model = glm::mat4(1.0f);
-    for (int i = 0; i < numInstances; i++)
+    auto a = sc.shuchu(0, 0, 0, 1);
+	std::cout << a.size() << std::endl;
+    for (auto &b:a)
     {
         // 生成随机位置
-        float x = static_cast<float>(rand() % 10 - 5); // -50到50之间
-        float y = static_cast<float>(rand() % 10 - 5);
-        float z = static_cast<float>(rand() % 10 - 5);
+        float x = static_cast<float>(b.x); // -50到50之间
+        float y = static_cast<float>(b.y);
+        float z = static_cast<float>(b.z);
         // 创建实例数据
         InstanceData instance;
-        instance.modelMatrix = glm::translate(model, glm::vec3(x, y, z));
-        instance.textureOffset.x = textureCoords[216].x/chang; // 随机选择一个纹理索引
-		instance.textureOffset.y = textureCoords[216].y/kuan;
+        instance.modelMatrix = glm::translate(model, glm::vec3(x, z, y));
+        instance.textureOffset.x = textureCoords[b.block_type].x/chang; // 随机选择一个纹理索引
+		instance.textureOffset.y = textureCoords[b.block_type].y/kuan;
         // 添加到实例列表
         instances.push_back(instance);
 	}
+	shilihuashulian = instances.size();
+	std::cout << "Generated " << instances.size() << " instances." << std::endl;
 }

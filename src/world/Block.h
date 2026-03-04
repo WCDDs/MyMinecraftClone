@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include "../core/Chunk.h"
 
 struct Vertex {
 	glm::vec3 Position;// 顶点位置
@@ -31,5 +32,6 @@ struct InstanceData {
 };
 
 extern std::vector<InstanceData> instances;
-
-void generateInstances(int numInstances); // 生成实例数据
+extern int shilihuashulian;
+extern qukuai sc;
+void generateInstances(); // 生成实例数据
