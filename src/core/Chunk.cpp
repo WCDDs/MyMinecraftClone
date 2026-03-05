@@ -79,7 +79,7 @@ qukuai::qukuai_data qukuai::jiancha_jiaozai(int x1, int y1, int z1) {
 	}
 }
 std::vector<qukuai::qukuai_block> qukuai::shuchu(int x, int y, int z, int jiaozaifanwui) {
-	int x1 = x / CHUNK_SIZE; int y1 = y / CHUNK_SIZE; int z1 = z / CHUNK_SIZE;
+	int x1 = x ; int y1 = y ; int z1 = z ;
 	std::vector<qukuai_data> chucun;
 	std::vector<qukuai_block> shuchu1;
 	int x2 = 0, y2 = 0, z2 = 0;

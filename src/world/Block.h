@@ -34,4 +34,4 @@ struct InstanceData {
 extern std::vector<InstanceData> instances;
 extern int shilihuashulian;
 extern qukuai sc;
-void generateInstances(); // 生成实例数据
+void generateInstances(int x, int y, int z, int qukuaidaxiao); // 生成实例数据

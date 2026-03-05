@@ -20,10 +20,52 @@ glm::mat4 pMat, vMat, mMat, mvMat;
 
 glm::vec2 wenlizuobiao_xy;
 
+glm::ivec3 wuizhi;
+glm::ivec3 wuizhi1;
+
+void CleanupOpenGLResources() {
+	// 1. 先解除绑定（虽然不是必须，但是好习惯）
+	glUseProgram(0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// 2. 删除着色器程序 (Shader Program)
+	if (renderingProgram != 0) {
+		glDeleteProgram(renderingProgram);
+		renderingProgram = 0;
+	}
+
+	// 3. 删除顶点数组对象 (VAO) - 通常先于VBO/EBO删除
+	if (vao != 0) {
+		glDeleteVertexArrays(1, &vao[0]);
+		vao[0] = 0;
+	}
+
+	// 4. 删除缓冲对象 (VBO, EBO)
+	if (vbo[0] != 0) {
+		glDeleteBuffers(1, &vbo[0]);
+		vbo[0] = 0;
+	}
+	if (vbo[1] != 0) {
+		glDeleteBuffers(1, &vbo[1]);
+		vbo[1] = 0;
+	}
+
+	// 5. 删除纹理 (Texture)
+	if (textureID != 0) {
+		glDeleteTextures(1, &textureID);
+		textureID = 0;
+	}
+
+	// ... 继续删除其他所有用glGen*创建的对象
+}
+
 void setupVertices(void) {
 
 	Select_Material();
-	generateInstances();// 生成实例数据的函数 
+	generateInstances(1, 0, 0, shenchenqukuaidaxiao);// 生成实例数据的函数 
 
 	glGenVertexArrays(1, vao);
 	glBindVertexArray(vao[0]);
@@ -32,10 +74,39 @@ void setupVertices(void) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
 	glBufferData(GL_ARRAY_BUFFER, cubeVertices.size() * sizeof(Vertex), cubeVertices.data(), GL_STATIC_DRAW);
 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glEnableVertexAttribArray(0);
+
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3)));
+	glEnableVertexAttribArray(1);
+
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3)));
+	glEnableVertexAttribArray(2);
+
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, instances.size() * sizeof(InstanceData), instances.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, maxInstances * sizeof(InstanceData) * 3, nullptr, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)0);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(sizeof(glm::vec4)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(2 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(3 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(4 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(7);
+	// 关键：设置属性为实例化模式
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+	glVertexAttribDivisor(7, 1);
 
 
 	glGenTextures(1, &textureID); // 创建一个纹理ID
@@ -61,6 +132,9 @@ void setupVertices(void) {
 	}
 	stbi_image_free(Texdata);
 
+	wuizhi.x = int(camera.Position.x) / 16;
+	wuizhi.y = int(camera.Position.y) / 16;
+	wuizhi.z = int(camera.Position.z) / 16;
 }
 
 void init(GLFWwindow* window) {
@@ -77,7 +151,16 @@ void init(GLFWwindow* window) {
 
 void display(GLFWwindow* window, double currentTime) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	wuizhi1.x = camera.Position.x > 0 ? int(camera.Position.x) / 16 : int(camera.Position.x) / 16 - 1;
+	wuizhi1.y = camera.Position.y > 0 ? int(camera.Position.y) / 16 : int(camera.Position.y) / 16 - 1;
+	wuizhi1.z = camera.Position.z > 0 ? int(camera.Position.z) / 16 : int(camera.Position.z) / 16 - 1;
+	if(wuizhi.x != wuizhi1.x || wuizhi1.y || wuizhi1.z){
+		wuizhi.x = wuizhi1.x;
+		wuizhi.y = wuizhi1.y;
+		wuizhi.z = wuizhi1.z;
+		instances.clear();
+		generateInstances(wuizhi.x, wuizhi.z, 0, shenchenqukuaidaxiao);
+	}
 
 	processInput(window);// 键盘输入处理
 
@@ -85,10 +168,10 @@ void display(GLFWwindow* window, double currentTime) {
 
 	glfwGetFramebufferSize(window, &width, &height);
 	aspect = (float)width / (float)height;
-	pMat = camera.GetProjectionMatrix(aspect);
+	pMat = camera.GetProjectionMatrix(aspect);// 投影矩阵 
 
-	vMat = camera.GetViewMatrix();
-	mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ));
+	vMat = camera.GetViewMatrix();// 视图矩阵
+	mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ));// 模型矩阵
 	mvMat = vMat * mMat;
 	
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
@@ -103,45 +186,23 @@ void display(GLFWwindow* window, double currentTime) {
 	// 设置着色器中的纹理单元
 	glUniform1i(glGetUniformLocation(renderingProgram, "ourTexture"), 0);
 
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec3)));
-	glEnableVertexAttribArray(1);
-
-	
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(glm::vec3)));
-	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+	size_t writeOffset = (ringIndex % 3) * maxInstances * sizeof(InstanceData);
 
+	glBufferSubData(GL_ARRAY_BUFFER,writeOffset, instances.size() * sizeof(InstanceData), instances.data());
 
-
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)0);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(sizeof(glm::vec4)));
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(2 * sizeof(glm::vec4)));
-	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(3 * sizeof(glm::vec4)));
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(4 * sizeof(glm::vec4)));
-	glEnableVertexAttribArray(7);
-	// 关键：设置属性为实例化模式
-	glVertexAttribDivisor(3, 1);
-	glVertexAttribDivisor(4, 1);
-	glVertexAttribDivisor(5, 1);
-	glVertexAttribDivisor(6, 1);
-	glVertexAttribDivisor(7, 1);
-
+	
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(writeOffset));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(writeOffset + 1*sizeof(glm::vec4)));
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(writeOffset + 2*sizeof(glm::vec4)));
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(writeOffset + 3*sizeof(glm::vec4)));
+	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(writeOffset + 4*sizeof(glm::vec4))); 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 36, shilihuashulian);
+
+	ringIndex++;
 }
 
 int main(void) {
@@ -159,16 +220,16 @@ int main(void) {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// 设置回调函数
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetKeyCallback(window, key_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);// 鼠标移动回调函数
+	glfwSetScrollCallback(window, scroll_callback);// 鼠标滚轮回调函数
+	glfwSetKeyCallback(window, key_callback);// 键盘输入回调函数
 
 	while (!glfwWindowShouldClose(window)) {
 		display(window, glfwGetTime());
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
+	CleanupOpenGLResources();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);

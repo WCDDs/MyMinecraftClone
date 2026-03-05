@@ -386,10 +386,10 @@ glm::vec2 getTextureCoords(int index)
 std::vector<InstanceData> instances;
 qukuai sc;
 int shilihuashulian;
-void generateInstances()
+void generateInstances(int x,int y,int z ,int qukuaidaxiao)
 {
     glm::mat4 model = glm::mat4(1.0f);
-    auto a = sc.shuchu(0, 0, 0, 1);
+    auto a = sc.shuchu(x, y, z, qukuaidaxiao);
 	std::cout << a.size() << std::endl;
     for (auto &b:a)
     {
