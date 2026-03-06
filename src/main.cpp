@@ -135,6 +135,9 @@ void setupVertices(void) {
 	wuizhi.x = int(camera.Position.x) / 16;
 	wuizhi.y = int(camera.Position.y) / 16;
 	wuizhi.z = int(camera.Position.z) / 16;
+	wuizhi.x = wuizhi1.x;
+	wuizhi.y = wuizhi1.y;
+	wuizhi.z = wuizhi1.z;
 }
 
 void init(GLFWwindow* window) {
@@ -147,14 +150,17 @@ void init(GLFWwindow* window) {
 	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 	texturezuobiao = glGetUniformLocation(renderingProgram, "texturezuobiao");
 	setupVertices();
+
 }
 
 void display(GLFWwindow* window, double currentTime) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
 	wuizhi1.x = camera.Position.x > 0 ? int(camera.Position.x) / 16 : int(camera.Position.x) / 16 - 1;
 	wuizhi1.y = camera.Position.y > 0 ? int(camera.Position.y) / 16 : int(camera.Position.y) / 16 - 1;
 	wuizhi1.z = camera.Position.z > 0 ? int(camera.Position.z) / 16 : int(camera.Position.z) / 16 - 1;
-	if(wuizhi.x != wuizhi1.x || wuizhi1.y || wuizhi1.z){
+	if(wuizhi.x != wuizhi1.x || wuizhi.y!=wuizhi1.y || wuizhi.z!=wuizhi1.z){
 		wuizhi.x = wuizhi1.x;
 		wuizhi.y = wuizhi1.y;
 		wuizhi.z = wuizhi1.z;
@@ -174,6 +180,7 @@ void display(GLFWwindow* window, double currentTime) {
 	mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ));// 模型矩阵
 	mvMat = vMat * mMat;
 	
+
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
 
@@ -211,10 +218,15 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	GLFWwindow* window = glfwCreateWindow(1800, 1200, "Chapter 4 - program 1a", NULL, NULL);
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
 	if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
 	glfwSwapInterval(1);
+	glEnable(GL_DEPTH_TEST);
 
 	init(window);
+
+	// 创建并初始化天空盒
 
 	// 必须设置：将鼠标设置为禁用模式（隐藏并捕获）
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -225,6 +237,7 @@ int main(void) {
 	glfwSetKeyCallback(window, key_callback);// 键盘输入回调函数
 
 	while (!glfwWindowShouldClose(window)) {
+		
 		display(window, glfwGetTime());
 		glfwSwapBuffers(window);
 		glfwPollEvents();
