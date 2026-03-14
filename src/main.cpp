@@ -2,24 +2,7 @@
 
 using namespace std;
 
-#define numVAOs 1
-#define numVBOs 2
 
-Utils util = Utils();
-float cameraX, cameraY, cameraZ;
-float cubeLocX, cubeLocY, cubeLocZ;
-GLuint renderingProgram;
-GLuint vao[numVAOs];
-GLuint vbo[numVBOs];
-
-// variable allocation for display
-GLuint mvLoc, projLoc;
-int width, height;
-float aspect; GLuint aspectLoc;
-glm::mat4 pMat, vMat, mMat, mvMat;
-glm::vec2 wenlizuobiao_xy;
-glm::ivec3 wuizhi;
-glm::ivec3 wuizhi1;
 
 void CleanupOpenGLResources() {
 	// 1. 先解除绑定（虽然不是必须，但是好习惯）
@@ -79,7 +62,7 @@ void CleanupOpenGLResources() {
 void setupVertices(void) {
 
 	Select_Material();
-	generateInstances(1, 0, 0, shenchenqukuaidaxiao);// 生成实例数据的函数 
+	generateInstances(0, 0, 0, shenchenqukuaidaxiao);// 生成实例数据的函数 
 
 	glGenVertexArrays(1, &skyboxVAO);// 生成天空盒VAO
 	glGenBuffers(1, &skyboxVBO);// 生成天空盒VBO
@@ -162,9 +145,9 @@ void setupVertices(void) {
 	}
 	stbi_image_free(Texdata);
 
-	wuizhi.x = int(camera.Position.x) / 16;
-	wuizhi.y = int(camera.Position.y) / 16;
-	wuizhi.z = int(camera.Position.z) / 16;
+	wuizhi1.x = static_cast<int>(std::floor(camera.Position.x / 16.0f));
+	wuizhi1.y = static_cast<int>(std::floor(camera.Position.y / 16.0f));
+	wuizhi1.z = static_cast<int>(std::floor(camera.Position.z / 16.0f));
 	wuizhi.x = wuizhi1.x;
 	wuizhi.y = wuizhi1.y;
 	wuizhi.z = wuizhi1.z;
@@ -186,10 +169,9 @@ void init(GLFWwindow* window) {
 void display(GLFWwindow* window, double currentTime) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-	wuizhi1.x = camera.Position.x > 0 ? int(camera.Position.x) / 16 : int(camera.Position.x) / 16 - 1;
-	wuizhi1.y = camera.Position.y > 0 ? int(camera.Position.y) / 16 : int(camera.Position.y) / 16 - 1;
-	wuizhi1.z = camera.Position.z > 0 ? int(camera.Position.z) / 16 : int(camera.Position.z) / 16 - 1;
+	wuizhi1.x = static_cast<int>(std::floor(camera.Position.x / 16.0f));
+	wuizhi1.y = static_cast<int>(std::floor(camera.Position.y / 16.0f));
+	wuizhi1.z = static_cast<int>(std::floor(camera.Position.z / 16.0f));
 	if(wuizhi.x != wuizhi1.x || wuizhi.y!=wuizhi1.y || wuizhi.z!=wuizhi1.z){
 		wuizhi.x = wuizhi1.x;
 		wuizhi.y = wuizhi1.y;
@@ -308,6 +290,7 @@ int main(void) {
 
 	// 必须设置：将鼠标设置为禁用模式（隐藏并捕获）
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 	// 设置回调函数
 	glfwSetCursorPosCallback(window, mouse_callback);// 鼠标移动回调函数

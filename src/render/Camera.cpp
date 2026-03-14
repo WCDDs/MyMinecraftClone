@@ -30,12 +30,12 @@ Camera::Camera(float posX, float posY, float posZ,
     UpdateCameraVectors(); 
 }
 
-glm::mat4 Camera::GetViewMatrix()
+glm::mat4 Camera::GetViewMatrix()//获取视图矩阵
 {
     return glm::lookAt(Position, Position + Front, Up);
 }
 
-glm::mat4 Camera::GetProjectionMatrix(float aspectRatio, float nearPlane, float farPlane)
+glm::mat4 Camera::GetProjectionMatrix(float aspectRatio, float nearPlane, float farPlane)//获取投影矩阵
 {
     return glm::perspective(glm::radians(Zoom), aspectRatio, nearPlane, farPlane);
 }
@@ -58,10 +58,10 @@ void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime)
         Position += Right * velocity;
         break;
     case CameraMovement::UP:
-        Position += Up * velocity;
+        Position += glm::normalize(WorldUp) * velocity;
         break;
     case CameraMovement::DOWN:
-        Position -= Up * velocity;
+        Position -= glm::normalize(WorldUp) * velocity;
         break;
     }
 }

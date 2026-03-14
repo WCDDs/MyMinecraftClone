@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <GL/glew.h>
+
 #include <GLFW/glfw3.h>
 #include <SOIL2.h>
 #include <string>
@@ -14,6 +15,25 @@
 #include "world/Block.h"
 #include "render/Utils.h"
 #include "render/Camera.h"
+
+#define numVAOs 1
+#define numVBOs 2
+
+Utils util = Utils();
+float cameraX, cameraY, cameraZ;
+float cubeLocX, cubeLocY, cubeLocZ;
+GLuint renderingProgram;
+GLuint vao[numVAOs];
+GLuint vbo[numVBOs];
+
+// variable allocation for display
+GLuint mvLoc, projLoc;
+int width, height;
+float aspect; GLuint aspectLoc;
+glm::mat4 pMat, vMat, mMat, mvMat;
+glm::vec2 wenlizuobiao_xy;
+glm::ivec3 wuizhi;
+glm::ivec3 wuizhi1;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 400, lastY = 300;// 鼠标初始位置（窗口中心）
@@ -238,6 +258,29 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+// 鼠标按钮回调函数
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        std::cout << "左键按下 at (" << xpos << ", " << ypos << ")" << std::endl;
+		sc.Raycast(camera.Position,camera.Front);
+		std::cout << "相机位置1: (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")\n";
+    }
+    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        std::cout << "左键释放" << std::endl;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        std::cout << "右键按下 at (" << xpos << ", " << ypos << ")" << std::endl;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+        std::cout << "右键释放" << std::endl;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+        std::cout << "中键按下" << std::endl;
+    }
+}
 // 创建一个简单的立方体贴图纹理，用于测试天空盒渲染
 unsigned int loadCubemap(std::vector<std::string> faces) {
     unsigned int textureID;

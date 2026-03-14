@@ -1,33 +1,53 @@
 #pragma once
-#include<iostream>
-#include<vector>
-#include<list>
+#include <iostream>
+#include <vector>
+#include <map>
+#include <tuple>
+#include <glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
 
 class qukuai {
-	private:
-		static constexpr int CHUNK_SIZE = 16; // 区块尺寸 16x16x16
-		static constexpr int VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
-		struct qukuai_data {
-			int x, y, z; // 区块坐标
-			std::vector<int> blocks; // 存储区块内的方块数据
-			qukuai_data(int x, int y, int z) : x(x), y(y), z(z), blocks(VOLUME, 163) {} // 初始化区块数据
-		};
-		struct qukuai_zonghe {
-			std::list<qukuai_data> qukuais_1;//第一象限
-			std::list<qukuai_data> qukuais_2;//第二象限
-			std::list<qukuai_data> qukuais_3;//第三象限
-			std::list<qukuai_data> qukuais_4;//第四象限
-		};
-		qukuai_zonghe qukuais;
+private:
+    static constexpr int CHUNK_SIZE = 16;
+    static constexpr int VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+    static constexpr float maxDistance = 8.0f;
+    static constexpr int chushifangkuaileixing = 35;
+
+    glm::vec3 position = glm::vec3(0, 0, 0), front = glm::vec3(0, 0, 0), up = glm::vec3(0, 0, 0), right = glm::vec3(0, 0, 0);
+
+    struct qukuai_data {
+        int x, y, z;
+        std::vector<int> blocks;
+        qukuai_data(int x_, int y_, int z_, int type_ = chushifangkuaileixing)
+            : x(x_), y(y_), z(z_), blocks(VOLUME, type_) {
+        }
+        // 添加默认构造函数以便 map 的某些操作（如 operator[]）
+        qukuai_data() : x(0), y(0), z(0), blocks(VOLUME,0) {}
+    };
+
+    struct RaycastResult {
+        bool hit = false;
+        int blockType = 0;
+        float distance = 0;
+		glm::vec3 block;// 被击中的方块坐标
+		glm::vec3 hitNormal;// 碰撞法线
+    };
+
+    // 使用 map 存储所有区块，键为 (x,y,z) 三元组
+    std::map<std::tuple<int, int, int>, qukuai_data> qukuais_map;
+
 public:
-	qukuai(){}
-	struct qukuai_block {
-		int x, y, z; // 方块坐标
-		int block_type; // 方块类型
-		qukuai_block(int x, int y, int z, int block_type) : x(x), y(y), z(z), block_type(block_type) {}
-	};
-	qukuai_data jiancha_jiaozai(int x, int y, int z);
-	std::vector<qukuai_block> shuchu(int x, int y, int z, int jiaozaifanwui);
+    qukuai() {}
 
+    struct qukuai_block {
+        int x, y, z;
+        int block_type;
+        qukuai_block(int x_, int y_, int z_, int bt) : x(x_), y(y_), z(z_), block_type(bt) {}
+    };
 
+    qukuai_data jiancha_jiaozai(int x, int y, int z, bool shifujiancha = true);
+    std::vector<qukuai_block> shuchu(int x, int y, int z, int jiaozaifanwui);
+    void ExtractCameraData(const glm::mat4& viewMatrix);
+    RaycastResult Raycast(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
+    int getBlockType(int blockX, int blockY, int blockZ);
 };
