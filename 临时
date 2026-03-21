@@ -1,0 +1,114 @@
+qukuai::RaycastResult qukuai::Raycast(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
+    RaycastResult RESULT;
+    std::cout << "射线起点: (" << rayOrigin.x << "," << rayOrigin.y << "," << rayOrigin.z << ")\n";
+
+	glm::dvec3 origin(rayOrigin.z, rayOrigin.y, rayOrigin.x);// 使用 double 以提高精度，减少浮点误差
+	glm::dvec3 direction(rayDirection.x, rayDirection.y, rayDirection.z);// 同样使用 double 来计算方向向量的归一化，确保更高的精度
+	glm::dvec3 dirNormalized = glm::normalize(direction);// 归一化方向向量，确保长度为1，避免步长计算中的误差积累
+    const double EPSILON = 1e-6;
+
+    int blockX = static_cast<int>(std::round(origin.x));
+    int blockY = static_cast<int>(std::round(origin.y));
+    int blockZ = static_cast<int>(std::round(origin.z));
+
+	double stepX = (dirNormalized.x > 0) ? 0.5 : (dirNormalized.x < 0) ? -0.5 : 0;// 注意：如果方向分量为零，步长应该为0，表示在该轴上不移动。
+    double stepY = (dirNormalized.y > 0) ? 0.5 : (dirNormalized.y < 0) ? -0.5 : 0;
+    double stepZ = (dirNormalized.z > 0) ? 0.5 : (dirNormalized.z < 0) ? -0.5 : 0;
+
+    // 计算初始t值
+    double nextX, nextY, nextZ;
+    if (std::abs(dirNormalized.x) < EPSILON) {
+		nextX = std::numeric_limits<double>::infinity();// 如果方向分量接近零，设置为无穷大，表示永远不会在该轴上交叉
+    }
+    else {
+        nextX = (dirNormalized.x > 0) ?
+			(blockX + 1.0 - origin.x) / dirNormalized.x + EPSILON :// 如果方向分量为正，计算下一个整数边界的交点；如果为负，计算当前整数边界的交点。加上 EPSILON 来避免浮点误差导致的边界问题。
+            (blockX - origin.x-1.0) / dirNormalized.x + EPSILON;
+        }
+
+    if (std::abs(dirNormalized.y) < EPSILON) {
+        nextY = std::numeric_limits<double>::infinity();
+    }
+    else {
+        nextY = (dirNormalized.y > 0) ?
+            (blockY + 1.0 - origin.y) / dirNormalized.y + EPSILON :
+            (blockY - origin.y ) / dirNormalized.y + EPSILON;
+        }
+
+    if (std::abs(dirNormalized.z) < EPSILON) {
+        nextZ = std::numeric_limits<double>::infinity();
+    }
+    else {
+        nextZ = (dirNormalized.z > 0) ?
+            (blockZ + 1.0 - origin.z) / dirNormalized.z + EPSILON :
+            (blockZ - origin.z-1.0) / dirNormalized.z + EPSILON;
+        }
+
+    double deltaX = (std::abs(dirNormalized.x) < EPSILON) ?
+        std::numeric_limits<double>::infinity() : std::abs(1.0 / dirNormalized.x);
+    double deltaY = (std::abs(dirNormalized.y) < EPSILON) ?
+        std::numeric_limits<double>::infinity() : std::abs(1.0 / dirNormalized.y);
+    double deltaZ = (std::abs(dirNormalized.z) < EPSILON) ?
+        std::numeric_limits<double>::infinity() : std::abs(1.0 / dirNormalized.z);
+
+    double distance = 0;
+    int lastBlockX = blockX, lastBlockY = blockY, lastBlockZ = blockZ;
+    bool firstStep = true;
+	double blockx = blockX, blocky = blockY, blockz = blockZ;// 注意：blockX/Y/Z 是整数坐标，blockx/y/z 是 double 类型的当前方块坐标，用于计算交点位置和法线。
+    while (distance < maxDistance) {
+        // 跳过起点方块（如果射线起点在方块内）
+        blockX = static_cast<int>(std::floor(blockx));
+		blockY = static_cast<int>(std::floor(blocky));
+		blockZ = static_cast<int>(std::floor(blockz));
+        if (!firstStep) {
+            int blockType = getBlockType(blockX, blockY, blockZ);
+        if (blockType > 0) {
+            RESULT.hit = true;
+            RESULT.blockType = blockType;
+                RESULT.distance = distance;
+                RESULT.block = glm::vec3(blockZ, blockY, blockX);
+
+                // 更精确的法线计算
+                glm::dvec3 hitPoint = origin + dirNormalized * distance;
+                glm::dvec3 blockMin(blockX, blockY, blockZ);
+                glm::dvec3 blockMax(blockX + 1.0, blockY + 1.0, blockZ + 1.0);
+
+                // 计算碰撞法线
+            glm::dvec3 normal(0, 0, 0);
+                if (std::abs(hitPoint.x - blockMin.x) < EPSILON) normal.x = -1;
+                else if (std::abs(hitPoint.x - blockMax.x) < EPSILON) normal.x = 1;
+                else if (std::abs(hitPoint.y - blockMin.y) < EPSILON) normal.y = -1;
+                else if (std::abs(hitPoint.y - blockMax.y) < EPSILON) normal.y = 1;
+                else if (std::abs(hitPoint.z - blockMin.z) < EPSILON) normal.z = -1;
+                else if (std::abs(hitPoint.z - blockMax.z) < EPSILON) normal.z = 1;
+
+            RESULT.hitNormal = glm::vec3(normal);
+				std::cout << RESULT.block.x << " " << RESULT.block.y << " " << RESULT.block.z << std::endl;
+            return RESULT;
+        }
+        }
+
+        // 步进到下一个格子
+        double minNext = std::min({ nextX, nextY, nextZ });
+
+        if (std::abs(nextX - minNext) < EPSILON) {
+            blockx += stepX;
+            distance = nextX;
+            nextX += deltaX;
+        }
+        else if (std::abs(nextY - minNext) < EPSILON) {
+            blocky += stepY;
+            distance = nextY;
+            nextY += deltaY;
+        }
+        else {
+            blockz += stepZ;
+            distance = nextZ;
+            nextZ += deltaZ;
+        }
+
+        firstStep = false;
+    }
+
+    return RESULT;
+}

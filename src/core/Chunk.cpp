@@ -4,25 +4,29 @@
 #include <algorithm>
 
 qukuai::qukuai_data qukuai::jiancha_jiaozai(int x1, int y1, int z1, bool shifujiancha) {
-    std::cout << "检查区块: (" << x1 << "," << y1 << "," << z1 << ")" << std::endl;
-
+    /*std::cout << "检查区块: (" << x1 << "," << y1 << "," << z1 << ")" << std::endl;*/
+    qukuai_data ls(x1, y1, z1, 0);
     auto key = std::make_tuple(x1, y1, z1);
     auto it = qukuais_map.find(key);
 
     if (it != qukuais_map.end()) {
-        return it->second;  // 找到，返回副本
+        ls= it->second;  // 找到，返回副本
     }
 
     if (shifujiancha) {
         // 插入新区块
         qukuai_data new_chunk(x1, y1, z1);
         auto result = qukuais_map.emplace(key, new_chunk);
-        return result.first->second;  // 返回副本
+        ls= result.first->second;  // 返回副本
     }
 
     // 未找到且不允许创建，返回一个空的 qukuai_data（需合理构造）
     // 注意：空区块的 blocks 可能为空，调用者应检查 blocks 大小或 x,y,z 判断有效性
-    return qukuai_data(x1, y1, z1, 0);  // 默认构造，blocks 为空，x=y=z=0
+    for (auto& a : genggaishuju[std::make_tuple(x1, y1, z1)])
+    {
+        ls.blocks[a.first] = a.second;
+    }
+    return ls;  // 默认构造，blocks 为空，x=y=z=0
 }
 
 std::vector<qukuai::qukuai_block> qukuai::shuchu(int x, int y, int z, int jiaozaifanwui) {
@@ -41,7 +45,7 @@ std::vector<qukuai::qukuai_block> qukuai::shuchu(int x, int y, int z, int jiaoza
             // 如果区块存在（即 blocks 非空），才加入 chucun。但 qukuai_data 默认构造的 blocks 为空，所以可以检查 blocks.empty()
             if (!chunk.blocks.empty()) {
                 chucun.push_back(chunk);
-            }
+			}// 注意：这里 push_back 会复制 chunk，如果 qukuai_data 中 blocks 很大，可能效率不高。可以考虑使用指针或引用，但为了简单保持原样。
         }
     }
 
@@ -181,7 +185,7 @@ int qukuai::getBlockType(int blockX, int blockY, int blockZ) {
     if (localY < 0) localY += CHUNK_SIZE;
     if (localZ < 0) localZ += CHUNK_SIZE;
 
-    int index = localY * CHUNK_SIZE * CHUNK_SIZE + localZ * CHUNK_SIZE + localX;
+    int index = localY * CHUNK_SIZE * CHUNK_SIZE + localX * CHUNK_SIZE + localZ;
     if (index >= 0 && index < static_cast<int>(currentChunk.blocks.size())) {
         return currentChunk.blocks[index];
     }
@@ -190,114 +194,168 @@ int qukuai::getBlockType(int blockX, int blockY, int blockZ) {
 }
 
 qukuai::RaycastResult qukuai::Raycast(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
-    RaycastResult RESULT;
-    std::cout << "射线起点: (" << rayOrigin.x << "," << rayOrigin.y << "," << rayOrigin.z << ")\n";
+    RaycastResult result;
+    
+    // 调试输出
+    //std::cout << "射线起点: (" << rayOrigin.x << "," << rayOrigin.y << "," << rayOrigin.z << ")\n";
+    //std::cout << "射线方向: (" << rayDirection.x << "," << rayDirection.y << "," << rayDirection.z << ")\n";
 
-    glm::dvec3 origin(rayOrigin.x, rayOrigin.y, rayOrigin.z);
+    // 1. 转换为double精度，避免浮点误差
+    const glm::dvec3 origin(rayOrigin.z, rayOrigin.y, rayOrigin.x);
     glm::dvec3 direction(rayDirection.x, rayDirection.y, rayDirection.z);
-    glm::dvec3 dirNormalized = glm::normalize(direction);
-    const double EPSILON = 1e-6;
 
-    int blockX = static_cast<int>(std::floor(origin.x));
-    int blockY = static_cast<int>(std::floor(origin.y));
-    int blockZ = static_cast<int>(std::floor(origin.z));
+    // 2. 归一化方向向量（必须）
+    const double dirLength = glm::length(direction);
+    if (dirLength < 1e-8) {
+        std::cerr << "错误：射线方向向量长度为0！\n";
+        return result; // 无效方向
+    }
+    const glm::dvec3 dirNormalized = direction / dirLength;
 
-    int stepX = (dirNormalized.x > 0) ? 1 : (dirNormalized.x < 0) ? -1 : 0;
-    int stepY = (dirNormalized.y > 0) ? 1 : (dirNormalized.y < 0) ? -1 : 0;
-    int stepZ = (dirNormalized.z > 0) ? 1 : (dirNormalized.z < 0) ? -1 : 0;
+    // 3. 定义精度常量
+    const double EPSILON = 1e-8;
 
-    // 计算初始t值
-    double nextX, nextY, nextZ;
+    // 4. 初始方块坐标（floor获取当前所在方块）
+    int currentX = static_cast<int>(glm::floor(origin.x));
+    int currentY = static_cast<int>(glm::floor(origin.y));
+    int currentZ = static_cast<int>(glm::floor(origin.z));
+
+    // 5. 计算每个轴的步长方向（-1, 0, 1）
+    const int stepX = (dirNormalized.x > EPSILON) ? 1 : (dirNormalized.x < -EPSILON) ? -1 : 0;
+    const int stepY = (dirNormalized.y > EPSILON) ? 1 : (dirNormalized.y < -EPSILON) ? -1 : 0;
+    const int stepZ = (dirNormalized.z > EPSILON) ? 1 : (dirNormalized.z < -EPSILON) ? -1 : 0;
+
+    // 6. 计算到下一个方块边界的t值
+    double tMaxX, tMaxY, tMaxZ;
+    double tDeltaX, tDeltaY, tDeltaZ;
+
+    // X轴
     if (std::abs(dirNormalized.x) < EPSILON) {
-        nextX = std::numeric_limits<double>::infinity();
+        tMaxX = std::numeric_limits<double>::infinity();
+        tDeltaX = std::numeric_limits<double>::infinity();
     }
     else {
-        nextX = (dirNormalized.x > 0) ?
-            (blockX + 1.0 - origin.x) / dirNormalized.x + EPSILON :
-            (blockX - origin.x) / dirNormalized.x + EPSILON;
+        const double boundaryX = (stepX > 0) ? currentX + 1.0 : currentX-1.0;
+        tMaxX = (boundaryX - origin.x) / dirNormalized.x;
+        tDeltaX = std::abs(1.0 / dirNormalized.x);
+
+        // 避免tMaxX为负（起点在边界上）
+        if (tMaxX < 0) tMaxX += tDeltaX;
     }
 
+    // Y轴
     if (std::abs(dirNormalized.y) < EPSILON) {
-        nextY = std::numeric_limits<double>::infinity();
+        tMaxY = std::numeric_limits<double>::infinity();
+        tDeltaY = std::numeric_limits<double>::infinity();
     }
     else {
-        nextY = (dirNormalized.y > 0) ?
-            (blockY + 1.0 - origin.y) / dirNormalized.y + EPSILON :
-            (blockY - origin.y) / dirNormalized.y + EPSILON;
+        const double boundaryY = (stepY > 0) ? currentY + 1.0 : currentY-1.0;
+        tMaxY = (boundaryY - origin.y) / dirNormalized.y;
+        tDeltaY = std::abs(1.0 / dirNormalized.y);
+
+        if (tMaxY < 0) tMaxY += tDeltaY;
     }
 
+    // Z轴
     if (std::abs(dirNormalized.z) < EPSILON) {
-        nextZ = std::numeric_limits<double>::infinity();
+        tMaxZ = std::numeric_limits<double>::infinity();
+        tDeltaZ = std::numeric_limits<double>::infinity();
     }
     else {
-        nextZ = (dirNormalized.z > 0) ?
-            (blockZ + 1.0 - origin.z) / dirNormalized.z + EPSILON :
-            (blockZ - origin.z) / dirNormalized.z + EPSILON;
+        const double boundaryZ = (stepZ > 0) ? currentZ + 1.0 : currentZ-1.0;
+        tMaxZ = (boundaryZ - origin.z) / dirNormalized.z;
+        tDeltaZ = std::abs(1.0 / dirNormalized.z);
+
+        if (tMaxZ < 0) tMaxZ += tDeltaZ;
     }
 
-    double deltaX = (std::abs(dirNormalized.x) < EPSILON) ?
-        std::numeric_limits<double>::infinity() : std::abs(1.0 / dirNormalized.x);
-    double deltaY = (std::abs(dirNormalized.y) < EPSILON) ?
-        std::numeric_limits<double>::infinity() : std::abs(1.0 / dirNormalized.y);
-    double deltaZ = (std::abs(dirNormalized.z) < EPSILON) ?
-        std::numeric_limits<double>::infinity() : std::abs(1.0 / dirNormalized.z);
-
-    double distance = 0;
-    int lastBlockX = blockX, lastBlockY = blockY, lastBlockZ = blockZ;
-    bool firstStep = true;
+    // 7. 遍历方块（核心DDA循环）
+    double distance = 0.0;
+    bool skipFirst = true; // 跳过起点所在方块
 
     while (distance < maxDistance) {
-        // 跳过起点方块（如果射线起点在方块内）
-        if (!firstStep) {
-            int blockType = getBlockType(blockX, blockY, blockZ);
+        // 检查当前方块（跳过第一个方块）
+        if (!skipFirst) {
+            const int blockType = getBlockType(currentX, currentY, currentZ);
             if (blockType > 0) {
-                RESULT.hit = true;
-                RESULT.blockType = blockType;
-                RESULT.distance = distance;
-                RESULT.block = glm::vec3(blockX, blockY, blockZ);
+                // 命中成功，填充结果
+                result.hit = true;
+                result.blockType = blockType;
+                result.distance = distance;
+                result.block = glm::vec3(currentZ, currentY, currentX);
 
-                // 更精确的法线计算
-                glm::dvec3 hitPoint = origin + dirNormalized * distance;
-                glm::dvec3 blockMin(blockX, blockY, blockZ);
-                glm::dvec3 blockMax(blockX + 1.0, blockY + 1.0, blockZ + 1.0);
+                // 计算精确命中点和法线
+                result.hitNormal = glm::vec3(origin + dirNormalized * distance);
 
-                // 计算碰撞法线
-                glm::dvec3 normal(0, 0, 0);
-                if (std::abs(hitPoint.x - blockMin.x) < EPSILON) normal.x = -1;
-                else if (std::abs(hitPoint.x - blockMax.x) < EPSILON) normal.x = 1;
-                else if (std::abs(hitPoint.y - blockMin.y) < EPSILON) normal.y = -1;
-                else if (std::abs(hitPoint.y - blockMax.y) < EPSILON) normal.y = 1;
-                else if (std::abs(hitPoint.z - blockMin.z) < EPSILON) normal.z = -1;
-                else if (std::abs(hitPoint.z - blockMax.z) < EPSILON) normal.z = 1;
+                // 确定碰撞面法线
+                if (std::abs(tMaxX - distance) < EPSILON) {
+                    result.hitNormal = glm::vec3(-stepX, 0, 0);
+                }
+                else if (std::abs(tMaxY - distance) < EPSILON) {
+                    result.hitNormal = glm::vec3(0, -stepY, 0);
+                }
+                else if (std::abs(tMaxZ - distance) < EPSILON) {
+                    result.hitNormal = glm::vec3(0, 0, -stepZ);
+                }
 
-                RESULT.hitNormal = glm::vec3(normal);
-				std::cout << RESULT.block.x << " " << RESULT.block.y << " " << RESULT.block.z << std::endl;
-                return RESULT;
+                std::cout << "命中方块: (" << currentX << "," << currentY << "," << currentZ << ")\n";
+                std::cout << "命中距离: " << distance << "\n";
+                //std::cout << "命中法线: (" << result.hitNormal.x << "," << result.hitNormal.y << "," << result.hitNormal.z << ")\n";
+                return result;
             }
         }
+        skipFirst = false;
 
-        // 步进到下一个格子
-        double minNext = std::min({ nextX, nextY, nextZ });
-
-        if (std::abs(nextX - minNext) < EPSILON) {
-            blockX += stepX;
-            distance = nextX;
-            nextX += deltaX;
+        // 8. 步进至下一个方块
+        if (tMaxX < tMaxY && tMaxX < tMaxZ) {
+            currentX += stepX;
+            distance = tMaxX;
+            tMaxX += tDeltaX;
         }
-        else if (std::abs(nextY - minNext) < EPSILON) {
-            blockY += stepY;
-            distance = nextY;
-            nextY += deltaY;
+        else if (tMaxY < tMaxZ) {
+            currentY += stepY;
+            distance = tMaxY;
+            tMaxY += tDeltaY;
         }
         else {
-            blockZ += stepZ;
-            distance = nextZ;
-            nextZ += deltaZ;
+            currentZ += stepZ;
+            distance = tMaxZ;
+            tMaxZ += tDeltaZ;
         }
 
-        firstStep = false;
+        // 防止无限循环
+        if (distance != distance) { // NaN检查
+            std::cerr << "错误：计算出NaN距离！\n";
+            break;
+        }
     }
-    
-    std::cout << "未检测到方块，返回结果" << std::endl;
-    return RESULT;
+
+    // 未命中
+    return result;
+}
+
+
+void qukuai::chucunbianhuashuju(qukuai::RaycastResult a) {
+    int blockX = static_cast<int>(a.block.x);
+    int blockY = static_cast<int>(a.block.y);
+	int blockZ = static_cast<int>(a.block.z);// 注意：a.block 是被击中的方块坐标，直接使用 x,y,z 作为全局坐标
+    int chunkX = static_cast<int>(std::floor(static_cast<float>(blockX) / CHUNK_SIZE));
+    int chunkY = static_cast<int>(std::floor(static_cast<float>(blockZ) / CHUNK_SIZE));
+    int chunkZ = static_cast<int>(std::floor(static_cast<float>(blockY) / CHUNK_SIZE));//区块坐标
+	qukuai_data currentChunk = jiancha_jiaozai(chunkX, chunkY, chunkZ, false);// 获取当前区块数据，shifujiancha=false 表示如果区块不存在则返回一个空的 qukuai_data（blocks 为空）
+    if (currentChunk.blocks.empty()) {
+        return; // 区块不存在，无需修改
+    }
+    int localX = blockX % CHUNK_SIZE;
+    int localY = blockY % CHUNK_SIZE;
+    int localZ = blockZ % CHUNK_SIZE;
+    if (localX < 0) localX += CHUNK_SIZE;
+    if (localY < 0) localY += CHUNK_SIZE;
+    if (localZ < 0) localZ += CHUNK_SIZE;
+    int index = localY * CHUNK_SIZE * CHUNK_SIZE + localZ * CHUNK_SIZE + localX;
+    if (index >= 0 && index < static_cast<int>(currentChunk.blocks.size())) {
+        //currentChunk.blocks[index] = 0; // 将方块类型设置为0（空气）
+        genggaishuju[std::make_tuple(chunkX, chunkZ, chunkY)][index]=0; // 存储到全局修改数据中
+		std::cout << "修改方块: (" << blockX << "," << blockY << "," << blockZ << ") 在区块 (" << chunkX << "," << chunkY << "," << chunkZ << ") 的局部坐标 (" << localX << "," << localY << "," << localZ << ") 索引 " << index << "\n";
+	}
 }

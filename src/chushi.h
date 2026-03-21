@@ -35,7 +35,7 @@ glm::vec2 wenlizuobiao_xy;
 glm::ivec3 wuizhi;
 glm::ivec3 wuizhi1;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 17.0f, 0.0f));//相机位置
 float lastX = 400, lastY = 300;// 鼠标初始位置（窗口中心）
 bool firstMouse = true;// 鼠标第一次移动的标志
 float deltaTime = 0.0f;// 当前帧与上一帧的时间差
@@ -51,7 +51,7 @@ const int instanceCount = 50;
 std::vector<glm::mat4> instanceMatrices;  // 存储所有实例的变换矩阵
 size_t maxInstances = 20000;  // 预分配的最大实例数
 size_t ringIndex = 0;  // 环形缓冲区索引
-const int shenchenqukuaidaxiao = 0;// 生成的区块大小
+const int shenchenqukuaidaxiao = 1;// 生成的区块大小
 const int jianchaqukuaifanwui = 8;// 检查区块范围（单位：方块）
 
 unsigned int skyboxVAO, skyboxVBO;// 天空盒顶点数组对象和顶点缓冲对象
@@ -258,21 +258,62 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+
+
+void ValidateRayDirection(Camera& camera) {
+    std::cout << "\n=== 射线方向验证 ===" << std::endl;
+
+    float pitch = camera.Pitch;
+    float yaw = camera.Yaw;
+
+    std::cout << "当前角度: 俯仰=" << pitch << "°, 偏航=" << yaw << "°" << std::endl;
+
+    // 计算正确的方向
+    glm::vec3 correctDir = camera.GetCorrectRayDirection();
+
+    std::cout << "正确方向: (" << correctDir.x << ", "
+        << correctDir.y << ", " << correctDir.z << ")" << std::endl;
+
+    // 计算理论上的击中点
+    float cameraY = camera.Position.y;
+    float targetY = 15.0f;  // 假设地面在Y=15
+
+    if (correctDir.y < 0) {  // 射线向下
+        float t = (cameraY - targetY) / (-correctDir.y);
+        glm::vec3 hitPoint = camera.Position + correctDir * t;
+
+        std::cout << "理论地面击中点: (" << hitPoint.x << ", "
+            << hitPoint.z << ")" << std::endl;
+        std::cout << "理论击中格子: ("
+            << static_cast<int>(std::floor(hitPoint.x)) << ", "
+            << static_cast<int>(std::floor(hitPoint.y)) << ", "
+            << static_cast<int>(std::floor(hitPoint.z)) << ")" << std::endl;
+    }
+}
+
 // 鼠标按钮回调函数
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
 
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        std::cout << "左键按下 at (" << xpos << ", " << ypos << ")" << std::endl;
-		sc.Raycast(camera.Position,camera.Front);
-		std::cout << "相机位置1: (" << camera.Position.x << ", " << camera.Position.y << ", " << camera.Position.z << ")\n";
+        
+        // 3. 实际的射线方向
+        glm::vec3 rayDir1 = camera.GetCorrectRayDirection();  // 或者你用的任何方法
+ 
+		std::cout << camera.Position.x << " " << camera.Position.y << " " << camera.Position.z << std::endl;
+        // 5. 射线检测
+        /*sc.Raycast(camera.Position, rayDir1);*/
+		sc.chucunbianhuashuju(sc.Raycast(camera.Position, rayDir1));
+        instances.clear();
+        generateInstances(wuizhi.x, wuizhi.z, 0, shenchenqukuaidaxiao);
     }
     else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         std::cout << "左键释放" << std::endl;
     }
     else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-        std::cout << "右键按下 at (" << xpos << ", " << ypos << ")" << std::endl;
+        std::cout << "右键按下"  << std::endl;
     }
     else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
         std::cout << "右键释放" << std::endl;

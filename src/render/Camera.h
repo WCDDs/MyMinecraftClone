@@ -9,6 +9,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <GLFW/glfw3.h>
+#include<iostream>  
 
 enum class CameraMovement {
 	FORWARD,//前进
@@ -80,6 +81,13 @@ public:
     // 更新相机向量（根据欧拉角重新计算）
     void UpdateCameraVectors();
 
+	glm::vec3 GetScreenCenterRayDirection(int screenWidth, int screenHeight);// 获取屏幕中心的射线方向
+
+	glm::vec3 GetCorrectRayDirection();// 获取修正后的射线方向，考虑俯仰角限制
+
+	glm::vec3 GetCorrectRayDirectionAlt();// 获取修正后的射线方向，使用不同的方法
+
+	
 private:
     // 限制俯仰角
     void ConstrainPitch();

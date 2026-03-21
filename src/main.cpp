@@ -231,6 +231,7 @@ void display(GLFWwindow* window, double currentTime) {
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 36, shilihuashulian);
 
+
 	// 开始绘制天空盒
 	GLint previousDepthFunc;
 	glGetIntegerv(GL_DEPTH_FUNC, &previousDepthFunc);// 保存当前深度测试函数
@@ -269,6 +270,7 @@ void display(GLFWwindow* window, double currentTime) {
 	glDepthMask(previousDepthMask);
 	//结束绘制天空盒
 
+
 	ringIndex++;
 }
 
@@ -276,6 +278,8 @@ int main(void) {
 	if (!glfwInit()) { exit(EXIT_FAILURE); }
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_POSITION_X, 500);
+	glfwWindowHint(GLFW_POSITION_Y, 200);
 	GLFWwindow* window = glfwCreateWindow(1800, 1200, "Chapter 4 - program 1a", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
