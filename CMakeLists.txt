@@ -35,7 +35,7 @@ add_executable(${PROJECT_NAME}
     
     src/render/Utils.cpp
     ${SOIL2_SOURCES}
- )
+  "src/core/PerlinNoise3D.h" "src/core/PerlinNoise3D.cpp")
 
 # ===== 只对SOIL2.c定义STB_IMAGE_IMPLEMENTATION =====
 set_source_files_properties(${LIB_ROOT}/lib/SOIL2/SOIL2.c PROPERTIES

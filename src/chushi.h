@@ -49,10 +49,11 @@ GLuint texturezuobiao;// 纹理坐标纹理
 const int instanceCount = 50;
 
 std::vector<glm::mat4> instanceMatrices;  // 存储所有实例的变换矩阵
-size_t maxInstances = 20000;  // 预分配的最大实例数
+
 size_t ringIndex = 0;  // 环形缓冲区索引
-const int shenchenqukuaidaxiao = 1;// 生成的区块大小
+constexpr int shenchenqukuaidaxiao = 3;// 生成的区块大小
 const int jianchaqukuaifanwui = 8;// 检查区块范围（单位：方块）
+constexpr size_t maxInstances = (2 * shenchenqukuaidaxiao + 1) * (2 * shenchenqukuaidaxiao + 1)*16384;  // 预分配的最大实例数
 
 unsigned int skyboxVAO, skyboxVBO;// 天空盒顶点数组对象和顶点缓冲对象
 unsigned int cubemapTexture;// 立方体贴图纹理ID

@@ -3,26 +3,77 @@
 #include <iostream>
 #include <algorithm>
 
+void qukuai::generateChunk(qukuai_data& chunk) {
+    for (int z = 0; z < depth; ++z) {
+        for (int x = 0; x < width; ++x) {
+            float nx = (x + static_cast<float>(chunk.x * width)) * scale;
+            float nz = (z + static_cast<float>(chunk.y * depth)) * scale;
+            // 使用FBM生成高度，注意我们只需要x,z二维，所以y固定为0
+            float h = noise.fbm3D(nx, 0.0f, nz, octaves, persistence, lacunarity);
+            int height = static_cast<int>((h + 1.0f) * 0.5f * CHUNK_SIZE); // 将[-1,1]映射到[0,CHUNK_SIZE]
+            for (int y = 0; y < CHUNK_SIZE; ++y) {
+                if (y < height) {
+                    chunk.blocks[y * width * depth + z * width + x] = chushifangkuaileixing; // 1表示有方块
+                }
+                else {
+                    chunk.blocks[y * width * depth + z * width + x] = 0; // 0表示空气
+                }
+            }
+        }
+    }
+}
+
+int qukuai::getBlockType(int blockX, int blockY, int blockZ) {
+
+    int chunkX = static_cast<int>(std::floor(static_cast<float>(blockX) / CHUNK_SIZE));
+    int chunkY = static_cast<int>(std::floor(static_cast<float>(blockZ) / CHUNK_SIZE));
+    int chunkZ = static_cast<int>(std::floor(static_cast<float>(blockY) / CHUNK_SIZE));
+
+    qukuai_data currentChunk = jiancha_jiaozai(chunkX, chunkY, chunkZ, false);
+
+    if (currentChunk.blocks.empty()) {
+        return 0;
+    }
+
+    int localX = blockX % CHUNK_SIZE;
+    int localY = blockY % CHUNK_SIZE;
+    int localZ = blockZ % CHUNK_SIZE;
+
+    if (localX < 0) localX += CHUNK_SIZE;
+    if (localY < 0) localY += CHUNK_SIZE;
+    if (localZ < 0) localZ += CHUNK_SIZE;
+
+    int index = localY * CHUNK_SIZE * CHUNK_SIZE + localZ * CHUNK_SIZE + localX;
+    if (index >= 0 && index < static_cast<int>(currentChunk.blocks.size())) {
+        return currentChunk.blocks[index];
+    }
+
+    return 0;
+}
+
 qukuai::qukuai_data qukuai::jiancha_jiaozai(int x1, int y1, int z1, bool shifujiancha) {
     /*std::cout << "检查区块: (" << x1 << "," << y1 << "," << z1 << ")" << std::endl;*/
     qukuai_data ls(x1, y1, z1, 0);
     auto key = std::make_tuple(x1, y1, z1);
     auto it = qukuais_map.find(key);
+    bool shifuzhaodao = true;
 
     if (it != qukuais_map.end()) {
         ls= it->second;  // 找到，返回副本
+		shifujiancha = false;  // 已经存在，不需要创建
     }
 
-    if (shifujiancha) {
+    if (shifujiancha&& shifuzhaodao) {
         // 插入新区块
         qukuai_data new_chunk(x1, y1, z1);
+		generateChunk(new_chunk);
         auto result = qukuais_map.emplace(key, new_chunk);
         ls= result.first->second;  // 返回副本
     }
 
     // 未找到且不允许创建，返回一个空的 qukuai_data（需合理构造）
     // 注意：空区块的 blocks 可能为空，调用者应检查 blocks 大小或 x,y,z 判断有效性
-    for (auto& a : genggaishuju[std::make_tuple(x1, y1, z1)])
+    for (auto& a : genggaishuju[std::make_tuple(x1, z1, y1)])
     {
         ls.blocks[a.first] = a.second;
     }
@@ -36,7 +87,7 @@ std::vector<qukuai::qukuai_block> qukuai::shuchu(int x, int y, int z, int jiaoza
 
     int x1 = x, y1 = y, z1 = z;
     std::vector<qukuai_data> chucun;
-    std::vector<qukuai_block> shuchu1;
+	shuchu1.clear();  // 清空之前的输出数据
 
     for (int i = x1 - jiaozaifanwui; i <= x1 + jiaozaifanwui; ++i) {
         for (int j = y1 - jiaozaifanwui; j <= y1 + jiaozaifanwui; ++j) {
@@ -108,40 +159,69 @@ std::vector<qukuai::qukuai_block> qukuai::shuchu(int x, int y, int z, int jiaoza
     // 为了可读性，我将在下面写出完整循环，保持原样。
 
     for (auto& a : chucun) {
+        int blockX = a.x * CHUNK_SIZE;
+		int blockY = a.y * CHUNK_SIZE;
+		int blockZ = a.z * CHUNK_SIZE;
         for (int i = 0; i < static_cast<int>(a.blocks.size()); ++i) {
             if (a.blocks[i] == 0) continue;
 
             int x2 = i % CHUNK_SIZE;
             int y2 = (i / CHUNK_SIZE) % CHUNK_SIZE;
             int z2 = i / (CHUNK_SIZE * CHUNK_SIZE);
-
+       
             // -x
-            if (x2 - 1 < 0 || a.blocks[i - 1] == 0) {
+            if (x2 - 1 < 0 && getBlockType(blockX + x2 - 1, blockZ + z2, blockY + y2) == 0) {
+                shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
+                continue;
+            }
+            if (x2 + 1 >= CHUNK_SIZE && getBlockType(blockX + x2 + 1, blockZ + z2, blockY + y2) == 0) {
+                shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
+                continue;
+            }
+            if (y2 - 1 < 0 && getBlockType(blockX + x2, blockZ + z2, blockY + y2 - 1) == 0) {
+                shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
+                continue;
+            }
+            if (y2 + 1 >= CHUNK_SIZE && getBlockType(blockX + x2, blockZ + z2, blockY + y2 + 1) == 0) {
+                shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
+                continue;
+            }
+            if (z2 - 1 < 0 && getBlockType(blockX + x2, blockZ + z2 - 1, blockY + y2) == 0) {
+                shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
+                continue;
+            }
+            if (z2 + 1 >= CHUNK_SIZE && getBlockType(blockX + x2, blockZ + z2 + 1, blockY + y2) == 0) {
+                shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
+                continue;
+            }
+
+
+            if (x2 - 1 >= 0 && a.blocks[i - 1] == 0) {
                 shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
                 continue;
             }
             // +x
-            if (x2 + 1 >= CHUNK_SIZE || a.blocks[i + 1] == 0) {
+            if (x2 + 1 < CHUNK_SIZE && a.blocks[i + 1] == 0) {
                 shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
                 continue;
             }
             // -y 注意原代码用的是 y2-1 和 i-CHUNK_SIZE，但根据存储布局，i-CHUNK_SIZE 可能不是 y 方向减1，因为每个 y 层有 256 个方块，应该是 i-256 才对。但这里保持原样。
-            if (y2 - 1 < 0 || a.blocks[i - CHUNK_SIZE] == 0) {
+            if (y2 - 1 >= 0 && a.blocks[i - CHUNK_SIZE] == 0) {
                 shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
                 continue;
             }
             // +y
-            if (y2 + 1 >= CHUNK_SIZE || a.blocks[i + CHUNK_SIZE] == 0) {
+            if (y2 + 1 < CHUNK_SIZE && a.blocks[i + CHUNK_SIZE] == 0) {
                 shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
                 continue;
             }
             // -z
-            if (z2 - 1 < 0 || a.blocks[i - CHUNK_SIZE * CHUNK_SIZE] == 0) {
+            if (z2 - 1 >= 0 && a.blocks[i - CHUNK_SIZE * CHUNK_SIZE] == 0) {
                 shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
                 continue;
             }
             // +z
-            if (z2 + 1 >= CHUNK_SIZE || a.blocks[i + CHUNK_SIZE * CHUNK_SIZE] == 0) {
+            if (z2 + 1 < CHUNK_SIZE && a.blocks[i + CHUNK_SIZE * CHUNK_SIZE] == 0) {
                 shuchu1.emplace_back(a.x * CHUNK_SIZE + x2, a.y * CHUNK_SIZE + y2, a.z * CHUNK_SIZE + z2, a.blocks[i]);
                 continue;
             }
@@ -150,7 +230,17 @@ std::vector<qukuai::qukuai_block> qukuai::shuchu(int x, int y, int z, int jiaoza
 
     return shuchu1;
 }
-
+int qukuai::fanhuikejianfangkuai(int x,int y,int z)
+{
+    for(auto& a : shuchu1)
+    {
+        if(a.x==x&&a.y==y&&a.z==z)
+        {
+            return a.block_type;
+        }
+	}
+	return 0;
+}
 void qukuai::ExtractCameraData(const glm::mat4& viewMatrix) {
     right = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
     up = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
@@ -166,32 +256,6 @@ void qukuai::ExtractCameraData(const glm::mat4& viewMatrix) {
     std::cout << "方块坐标: (" << a.x << "," << a.y << "," << a.z << ")\n";
 }
 
-int qukuai::getBlockType(int blockX, int blockY, int blockZ) {
-    int chunkX = static_cast<int>(std::floor(static_cast<float>(blockX) / CHUNK_SIZE));
-    int chunkY = static_cast<int>(std::floor(static_cast<float>(blockZ) / CHUNK_SIZE));
-    int chunkZ = static_cast<int>(std::floor(static_cast<float>(blockY) / CHUNK_SIZE));
-
-    qukuai_data currentChunk = jiancha_jiaozai(chunkX, chunkY, chunkZ, false);
-
-    if (currentChunk.blocks.empty()) {
-        return 0;
-    }
-
-    int localX = blockX % CHUNK_SIZE;
-    int localY = blockY % CHUNK_SIZE;
-    int localZ = blockZ % CHUNK_SIZE;
-
-    if (localX < 0) localX += CHUNK_SIZE;
-    if (localY < 0) localY += CHUNK_SIZE;
-    if (localZ < 0) localZ += CHUNK_SIZE;
-
-    int index = localY * CHUNK_SIZE * CHUNK_SIZE + localX * CHUNK_SIZE + localZ;
-    if (index >= 0 && index < static_cast<int>(currentChunk.blocks.size())) {
-        return currentChunk.blocks[index];
-    }
-
-    return 0;
-}
 
 qukuai::RaycastResult qukuai::Raycast(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
     RaycastResult result;
@@ -217,7 +281,7 @@ qukuai::RaycastResult qukuai::Raycast(const glm::vec3& rayOrigin, const glm::vec
 
     // 4. 初始方块坐标（floor获取当前所在方块）
     int currentX = static_cast<int>(glm::floor(origin.x));
-    int currentY = static_cast<int>(glm::floor(origin.y));
+    int currentY = static_cast<int>(glm::floor(origin.y))+2;
     int currentZ = static_cast<int>(glm::floor(origin.z));
 
     // 5. 计算每个轴的步长方向（-1, 0, 1）
@@ -276,7 +340,7 @@ qukuai::RaycastResult qukuai::Raycast(const glm::vec3& rayOrigin, const glm::vec
     while (distance < maxDistance) {
         // 检查当前方块（跳过第一个方块）
         if (!skipFirst) {
-            const int blockType = getBlockType(currentX, currentY, currentZ);
+            const int blockType = fanhuikejianfangkuai(currentZ, currentX, currentY);
             if (blockType > 0) {
                 // 命中成功，填充结果
                 result.hit = true;
@@ -359,3 +423,4 @@ void qukuai::chucunbianhuashuju(qukuai::RaycastResult a) {
 		std::cout << "修改方块: (" << blockX << "," << blockY << "," << blockZ << ") 在区块 (" << chunkX << "," << chunkY << "," << chunkZ << ") 的局部坐标 (" << localX << "," << localY << "," << localZ << ") 索引 " << index << "\n";
 	}
 }
+
